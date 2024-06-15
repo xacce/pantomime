@@ -1,0 +1,25 @@
+{
+    "name": "Pantomime",
+    "rootNamespace": "Pantomime",
+    "references": [
+        "Latios.Core",
+        "Latios.Kinemation",
+        "Latios.Transforms",
+        "Unity.Entities",
+        "Unity.Jobs",
+        "Unity.Mathematics",
+        "Unity.Transforms",
+        "Unity.Collections",
+        "Unity.Entities.Hybrid",
+        "Unity.Burst",
+        "Unity.Scenes"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "noEngineReferences": false
+}

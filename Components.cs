@@ -1,8 +1,9 @@
-﻿using Latios.Kinemation;
+﻿using Codice.Client.BaseCommands;
+using Latios.Kinemation;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace xdd.Pantomimess
+namespace Pantomime
 {
     public partial struct PantomimeEffects : IComponentData
     {
@@ -77,7 +78,7 @@ namespace xdd.Pantomimess
                 public int2 dynamicVariables;
                 public BlendMode blendMode;
                 public int trigger;
-                public ulong tags;
+                public ulong flags;
                 public bool loop;
                 public bool isDefault;
                 public float duration;
@@ -109,8 +110,10 @@ namespace xdd.Pantomimess
     {
         public int currenMotion;
         public float currentDuration;
+        public float timeMultiplier;
         public void Reset()
         {
+            timeMultiplier = 0;
             currenMotion = -1;
             currentDuration = 0;
         }
@@ -126,10 +129,32 @@ namespace xdd.Pantomimess
     public partial struct PantomimeTriggerElement : IBufferElementData
     {
         public int type;
+        public float fixedDuration;
+        
+        public static void Trigger(ref EntityCommandBuffer ecb, in Entity entity, int type, float duration = 0)
+        {
+            ecb.AppendToBuffer(
+                entity,
+                new PantomimeTriggerElement()
+                {
+                    type = type,
+                    fixedDuration = duration,
+                });
+        }
     }
 
-    public partial struct PantomimeTags : IComponentData
+    public partial struct PantomimeFlags : IComponentData
     {
-        public ulong tags;
+        public ulong flags;
+
+        public void Set(int flag)
+        {
+            flags |= (uint)flag;
+        }
+
+        public void UnSet(int flag)
+        {
+            flags &= ~(uint)flag;
+        }
     }
 }

@@ -4,15 +4,14 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using xdd.Pantomimess;
 
 namespace Pantomime.Aspects
 {
     [BurstCompile]
     public readonly partial struct PantomimeEffectAspect : IAspect
     {
-        private readonly RefRO<PantomimeEffects> _data;
-        private readonly OptimizedSkeletonAspect _skeletonAspect;
+        readonly RefRO<PantomimeEffects> _data;
+        readonly OptimizedSkeletonAspect _skeletonAspect;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Angle(in float3 from, in float3 to)

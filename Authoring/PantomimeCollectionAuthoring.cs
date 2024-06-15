@@ -10,7 +10,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace xdd.Pantomimess.Authoring
+namespace Pantomime
 {
 #if UNITY_EDITOR
     public class PantomimeCollectionAuthoring : MonoBehaviour
@@ -130,7 +130,7 @@ namespace xdd.Pantomimess.Authoring
                         var motionClips = builder.Allocate(ref motions[z].clipIndexes, motion.clips.Length);
                         var clipPositions = builder.Allocate(ref motions[z].clipPositions, motion.clips.Length);
                         motions[z].trigger = (int)motion.trigger;
-                        motions[z].tags = (ulong)motion.boolean;
+                        motions[z].flags = (ulong)motion.boolean;
                         motions[z].loop = motion.loop;
                         motions[z].isDefault = motion.isDefault;
                         motions[z].blendMode = motion.blendMode;
@@ -151,7 +151,7 @@ namespace xdd.Pantomimess.Authoring
 
                 baker.AddComponent<PantomimeCollection>(e);
                 baker.AddBuffer<PantomimeTriggerElement>(e);
-                baker.AddComponent<PantomimeTags>(e);
+                baker.AddComponent<PantomimeFlags>(e);
                 baker.AddComponent<PantomimeRuntime>(e);
                 return true;
             }

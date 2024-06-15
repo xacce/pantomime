@@ -1,15 +1,11 @@
 ﻿# if UNITY_EDITOR
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Latios.Kinemation;
-using NUnit.Framework;
 using Unity.Entities;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Pantomime.Authoring
+namespace Pantomime
 {
     [TemporaryBakingType]
     internal partial struct PantomimeMaskBakingBodyPartElement : IBufferElementData
@@ -121,6 +117,7 @@ namespace Pantomime.Authoring
                     };
                 }
                 var f = so.FindProperty(nameof(PantomimeMaskCreator.bones));
+                f.ClearArray();
                 f.arraySize = parts.Length;
                 foreach (var part in parts)
                 {

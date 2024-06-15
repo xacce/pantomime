@@ -1,16 +1,9 @@
-﻿using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using Pantomime.Editor.Nodes;
-using Unity.Mathematics;
+﻿using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using xdd.Pantomimess.Authoring;
 
-namespace Pantomime.Editor
+namespace Pantomime
 {
     public class PantomimeGraphWindow : EditorWindow
     {

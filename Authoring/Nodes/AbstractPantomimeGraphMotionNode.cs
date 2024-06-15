@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Linq;
 using Pantomime.Authoring.So;
+using Pantomime.Editor.Nodes;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
-using xdd.Pantomimess;
 
-namespace Pantomime.Editor.Nodes
+namespace Pantomime
 {
     public interface IMotionNode : ISaveablePosiotionNode
     {

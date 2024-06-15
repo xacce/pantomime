@@ -1,0 +1,25 @@
+{
+  "name": "com.xacce.pantomime",
+  "displayName": "Pantomime - latios animator",
+  "version": "0.0.1",
+  "unity": "2022.3",
+  "description": "",
+  "documentationURL": "",
+  "dependencies": {
+    "com.unity.entities": "1.2.1",
+    "com.latios.latiosframework": "0.10.1",
+    "com.unity.audio.dspgraph": "0.1.0-preview.22",
+    "com.unity.entities.graphics": "1.2.1",
+    "com.unity.burst": "1.8.12"
+  },
+  "unityRelease": "13f1",
+  "keywords": [
+    "dots",
+    "latios",
+    "framework",
+    "ecs"
+  ],
+  "author": {
+    "name": "Xacce"
+  }
+}

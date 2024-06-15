@@ -9,16 +9,9 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using xdd.Pantomimess;
-using xdd.Pantomimess.Authoring;
 
-namespace Pantomime.Editor
+namespace Pantomime
 {
-    interface Isd
-    {
-        public static string kek { get; }
-    }
-
     public class PantomimeGraphEditor : GraphView
     {
         private PantomimeCollectionAuthoring _authoring;
@@ -69,10 +62,16 @@ namespace Pantomime.Editor
                     overrideMode = layer.overrideMode,
                     baseWeight = layer.baseWeight,
                 };
+                List<IMotionNode> motionNodes = new List<IMotionNode>();
                 List<PantomimeCollectionAuthoring._Motion> motions = new List<PantomimeCollectionAuthoring._Motion>();
+
                 foreach (var motionsPortConnection in layer.motionsPort.connections)
                 {
                     if (motionsPortConnection.input.node is not IMotionNode motion) continue;
+                    motionNodes.Add(motion);
+                }
+                foreach (var motion in motionNodes.OrderBy(node => node.GetPosition().y))
+                {
                     var motionSerialized = new PantomimeCollectionAuthoring._Motion
                     {
                         boolean = motion.booleans,
@@ -103,6 +102,7 @@ namespace Pantomime.Editor
             }
             so.ApplyModifiedPropertiesWithoutUndo();
             SavePositions();
+            EditorUtility.SetDirty(_authoring);
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)

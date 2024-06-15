@@ -5,7 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace xdd.Pantomimess.Authoring
+namespace Pantomime
 {
     public class PantomimeEffectsAuthoring : MonoBehaviour
     {

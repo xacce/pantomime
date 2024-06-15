@@ -7,7 +7,6 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using xdd.Pantomimess;
 
 namespace Pantomime.Systems
 {
@@ -50,13 +49,13 @@ namespace Pantomime.Systems
             public void Execute(OptimizedSkeletonAspect skeleton, DynamicBuffer<PantomimeRuntimeLayerElement> runtimeLayers, ref PantomimeRuntime runtime,
                 DynamicBuffer<PantomimeTriggerElement> triggers,
                 DynamicBuffer<PantomimeDynamicValue> dynamicValues,
-                in PantomimeTags tags,
+                in PantomimeFlags flags,
                 in PantomimeCollection collection)
             {
                 _clipWeight.Clear();
                 bool hasTriggers = !triggers.IsEmpty;
                 bool hasLazyTrigger = false; //if in previous tick we have some animations completed, we need start blend AFTER new animations was sampled.
-                var triggersRaw = triggers.Reinterpret<int>().AsNativeArray();
+                // var triggersRaw = triggers.Reinterpret<int>().AsNativeArray();
                 ref var clips = ref collection.clipsBlob.Value.clips;
                 ref var layers = ref collection.blobData.Value.layersBlob;
 
@@ -69,21 +68,39 @@ namespace Pantomime.Systems
                     ref var runtimeLayer = ref runtimeLayers.ElementAt(l);
 
                     #region Handle triggers
-
+                    bool done = false;
                     for (int m = 0; m < layer.motions.Length; m++)
                     {
+                        if (done) break;
                         ref var candidate = ref layers[l].motions[m];
+                      
                         if (
                             hasTriggers &&
-                            runtimeLayer.currenMotion != m && //TODO rewrite fallback motion section
-                            triggersRaw.Contains(candidate.trigger) && (tags.tags & candidate.tags) == candidate.tags) //todo maybe trigger is index?
+                            runtimeLayer.currenMotion != m && (flags.flags & candidate.flags) == candidate.flags) //todo maybe trigger is index?
                         {
-                            runtimeLayer.currentDuration = 0f;
-                            runtimeLayer.currenMotion = m;
-                            runtimeLayer.Transit(m);
-                            // runtime.blendState = PantomimeRuntime.BlendState.Start;
-                            hasBlendings = true;
-                            break;
+                            // Debug.Log($"Layer: {l}, flags candidate: {candidate.flags}, flags: {flags}, motion index: {m}");
+                           
+                            for (int i = 0; i < triggers.Length; i++)
+                            {
+                                if (triggers[i].type == candidate.trigger)
+                                {
+                                    if (triggers[i].fixedDuration > 0)
+                                    {
+                                        runtimeLayer.timeMultiplier = candidate.duration / triggers[i].fixedDuration;
+                                    }
+                                    else
+                                    {
+                                        runtimeLayer.timeMultiplier = 0f;
+                                    }
+                                    runtimeLayer.currentDuration = 0f;
+                                    runtimeLayer.currenMotion = m;
+                                    runtimeLayer.Transit(m);
+                                    // runtime.blendState = PantomimeRuntime.BlendState.Start;
+                                    hasBlendings = true;
+                                    done = true;
+                                    break;
+                                }
+                            }
                         }
                     }
 
@@ -94,7 +111,7 @@ namespace Pantomime.Systems
 
                     #region Sample motions
 
-                    runtimeLayer.currentDuration += deltaTime;
+                    runtimeLayer.currentDuration += runtimeLayer.timeMultiplier == 0 ? deltaTime : deltaTime * runtimeLayer.timeMultiplier;
                     var layerTotalWeight = motion.blendMode != PantomimeCollection.BlendMode.Nothing
                         ? Helpers.BuildWeights(ref _clipWeight, ref dynamicValues, collection.blobData, l, runtimeLayer.currenMotion)
                         : 1f;
