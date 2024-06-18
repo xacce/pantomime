@@ -7,8 +7,10 @@ namespace Pantomime.Editor.Nodes
     public sealed class PantomimeGraphSingleMotionNode : AbstractGraphSingleMotionNode<PantomimeGraphMotionLayerPort, PantomimeGraphMotionClipsPort>
     {
         // private readonly Port _la;
-
-        public PantomimeGraphSingleMotionNode(GUID guid, int trigger, ulong booleans, bool loop, bool isDefault,IPantomimeParams prms) : base(guid, trigger, booleans, loop, isDefault, prms)
+        public PantomimeGraphSingleMotionNode(GUID guid, IPantomimeParams prms) : base(guid, prms)
+        {
+        }
+        public PantomimeGraphSingleMotionNode(PantomimeCollectionAuthoring._Motion motion, IPantomimeParams prms) : base(motion, prms)
         {
             title = "Motion";
         }

@@ -44,6 +44,8 @@ namespace Pantomime
             public ulong boolean;
             public bool isDefault;
             public bool loop;
+            public bool disableAutoExit;
+            public bool allowReentering;
         }
         [SerializeField] public PantomimeParamsUnified params_s;
         
@@ -55,7 +57,7 @@ namespace Pantomime
             public string guid;
         }
         [SerializeField] public GraphPosition[] _positions = Array.Empty<GraphPosition>();
-
+        [SerializeField] private bool enabled_s = true;
         [TemporaryBakingType]
         struct PantomimeCollectionAuthoringSmartBaker : ISmartBakeItem<PantomimeCollectionAuthoring>
         {
@@ -64,6 +66,7 @@ namespace Pantomime
 
             public bool Bake(PantomimeCollectionAuthoring authoring, IBaker baker)
             {
+                if (!authoring.enabled_s) return false;
                 var e = baker.GetEntity(TransformUsageFlags.Dynamic);
                 HashSet<AnimationClip> hashSetClips = new HashSet<AnimationClip>();
                 baker.AddBuffer<PantomimeRuntimeLayerElement>(e);
@@ -134,6 +137,8 @@ namespace Pantomime
                         motions[z].loop = motion.loop;
                         motions[z].isDefault = motion.isDefault;
                         motions[z].blendMode = motion.blendMode;
+                        motions[z].allowReentering = motion.allowReentering;
+                        motions[z].disableAutoExit = motion.disableAutoExit;
                         motions[z].dynamicVariables = motion.dynamicVariables;
                         for (int j = 0; j < motion.clips.Length; j++)
                         {

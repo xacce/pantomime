@@ -68,18 +68,19 @@ namespace Pantomime.Systems
                     ref var runtimeLayer = ref runtimeLayers.ElementAt(l);
 
                     #region Handle triggers
+
                     bool done = false;
                     for (int m = 0; m < layer.motions.Length; m++)
                     {
                         if (done) break;
                         ref var candidate = ref layers[l].motions[m];
-                      
+
                         if (
                             hasTriggers &&
-                            runtimeLayer.currenMotion != m && (flags.flags & candidate.flags) == candidate.flags) //todo maybe trigger is index?
+                            (candidate.allowReentering || runtimeLayer.currenMotion != m) && (flags.flags & candidate.flags) == candidate.flags) //todo maybe trigger is index?
                         {
                             // Debug.Log($"Layer: {l}, flags candidate: {candidate.flags}, flags: {flags}, motion index: {m}");
-                           
+
                             for (int i = 0; i < triggers.Length; i++)
                             {
                                 if (triggers[i].type == candidate.trigger)
@@ -155,9 +156,9 @@ namespace Pantomime.Systems
 
                     #endregion
 
-                    #region Fallback motions
+                    #region Auto exit
 
-                    if (!motion.loop && runtimeLayer.currentDuration >= motion.duration)
+                    if (!motion.loop && runtimeLayer.currentDuration >= motion.duration && !motion.disableAutoExit)
                     {
                         runtimeLayer.currenMotion = -1;
                         hasLazyTrigger = true;

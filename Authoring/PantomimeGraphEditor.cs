@@ -27,7 +27,7 @@ namespace Pantomime
             toolbar.Add(compileBtn);
             Add(toolbar);
         }
-       
+
 
         public void SavePositions()
         {
@@ -80,6 +80,8 @@ namespace Pantomime
                         trigger = motion.trigger,
                         blendMode = motion.blendMode,
                         isDefault = motion.isDefault,
+                        allowReentering = motion.allowReentering,
+                        disableAutoExit = motion.disableAutoExit,
                         dynamicVariables = motion.variables,
                     };
                     List<PantomimeCollectionAuthoring._Motion._Clip> clips = new List<PantomimeCollectionAuthoring._Motion._Clip>();
@@ -154,7 +156,7 @@ namespace Pantomime
 
         void AddBlendableMotion(DropdownMenuAction dropdownMenuAction)
         {
-            var m = new PantomimeGraph2dBlendMotionNode(GUID.Generate(), PantomimeCollection.BlendMode.Nothing, 0, 0, false, false, int2.zero, _authoring.params_s);
+            var m = new PantomimeGraph2dBlendMotionNode(GUID.Generate(), _authoring.params_s);
             AddElement(m);
             m.SetPosition(new Rect(viewTransform.matrix.inverse.MultiplyPoint(dropdownMenuAction.eventInfo.localMousePosition), new Vector2(100, 100)));
         }
@@ -168,7 +170,7 @@ namespace Pantomime
 
         void AddMotion(DropdownMenuAction dropdownMenuAction)
         {
-            var m = new PantomimeGraphSingleMotionNode(GUID.Generate(), 0, 0, false, false, _authoring.params_s);
+            var m = new PantomimeGraphSingleMotionNode(GUID.Generate(), _authoring.params_s);
             AddElement(m);
             m.SetPosition(new Rect(viewTransform.matrix.inverse.MultiplyPoint(dropdownMenuAction.eventInfo.localMousePosition), new Vector2(100, 100)));
         }
@@ -201,28 +203,22 @@ namespace Pantomime
                 AddElement(layerNode);
                 foreach (var motion in layer.motions)
                 {
-                    if (!GUID.TryParse(motion.guid, out var mguid)) continue;
+                    // if (!GUID.TryParse(motion.guid, out var mguid)) continue;
                     IMotionNode node;
                     if (motion.blendMode == PantomimeCollection.BlendMode.Nothing)
                     {
-                        node = new PantomimeGraphSingleMotionNode(mguid, (int)motion.trigger, (ulong)motion.boolean, motion.loop, motion.isDefault, _authoring.params_s);
+                        node = new PantomimeGraphSingleMotionNode(motion, _authoring.params_s);
                     }
                     else
                     {
                         node = new PantomimeGraph2dBlendMotionNode(
-                            mguid,
-                            motion.blendMode,
-                            (int)motion.trigger,
-                            (ulong)motion.boolean,
-                            motion.loop,
-                            motion.isDefault,
-                            motion.dynamicVariables,
+                            motion,
                             _authoring.params_s);
                     }
                     AddElement((GraphElement)node);
                     var edge = layerNode.motionsPort.ConnectTo(node.layerPort);
                     AddElement(edge);
-                    
+
                     foreach (var clip in motion.clips)
                     {
                         if (!GUID.TryParse(clip.guid, out var clipGuid)) continue;

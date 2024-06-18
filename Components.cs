@@ -80,6 +80,8 @@ namespace Pantomime
                 public int trigger;
                 public ulong flags;
                 public bool loop;
+                public bool disableAutoExit;
+                public bool allowReentering;
                 public bool isDefault;
                 public float duration;
             }
@@ -111,6 +113,8 @@ namespace Pantomime
         public int currenMotion;
         public float currentDuration;
         public float timeMultiplier;
+
+
         public void Reset()
         {
             timeMultiplier = 0;
@@ -130,7 +134,7 @@ namespace Pantomime
     {
         public int type;
         public float fixedDuration;
-        
+
         public static void Trigger(ref EntityCommandBuffer ecb, in Entity entity, int type, float duration = 0)
         {
             ecb.AppendToBuffer(
