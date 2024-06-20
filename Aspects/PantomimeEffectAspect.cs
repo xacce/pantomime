@@ -30,55 +30,47 @@ namespace Pantomime.Aspects
         }
 
         [BurstCompile]
-        public void ApplyEffects(in float3 toPosition, in float3 myPosition, float3 myFwdDirection)
+        public void ApplyEffects(in float3 target, in float3 position, in float3 forward, float deltaTime)
         {
             ref var effects = ref _data.ValueRO.effectsSets.Value.effects;
             if (effects.Length == 0) return;
-            var targetPosition = toPosition;
-            var distance = math.distancesq(targetPosition, myPosition);
+            var targetPosition = target;
+            var distance = math.distancesq(targetPosition, position);
             var bones = _skeletonAspect.bones;
 
             for (int i = 0; i < effects.Length; i++)
             {
                 ref var set = ref effects[i];
                 if (distance < set.minMaxDistanceSq.x || distance > set.minMaxDistanceSq.y) continue;
-                switch (set.type)
+                var childBone = bones[set.targetBone];
+                var _childFwd = math.normalizesafe(math.rotate(childBone.worldRotation, set.fwdAxis));
+                var _dirToTargetFromChild = math.normalizesafe(targetPosition - childBone.worldPosition);
+                var angle = Angle(_childFwd, _dirToTargetFromChild);
+                if (angle > set.angleLimit)
                 {
-                    case PantomimeEffects.Type.LocalDirectionWeightedChain:
-                        for (int j = 0; j < set.rules.Length; j++)
-                        {
-                            ref var rule = ref set.rules[j];
-                            var rawBone = bones[rule.boneIndex];
-                            var boneFwdAxis = math.rotate(rawBone.worldRotation, math.forward());
-                            var targetAxis = targetPosition - rawBone.worldPosition;
-                            var angle = Angle(boneFwdAxis, math.normalize(targetPosition - rawBone.worldPosition));
-                            if (angle > rule.angleLimit)
-                            {
-                                targetAxis = rawBone.worldPosition + math.lerp(targetAxis, boneFwdAxis, (angle - rule.angleLimit) / rule.angleTolerance) - rawBone.worldPosition;
-                            }
+                    targetPosition = childBone.worldPosition + math.lerp(_dirToTargetFromChild, _childFwd, math.min((angle - set.angleLimit) / math.radians(set.angleTolerance), 1f));
 
-                            var towards = math.nlerp(quaternion.identity, FromToRotation(boneFwdAxis, targetAxis), rule.weight);
-                            rawBone.worldRotation = math.mul(math.mul(towards, rawBone.worldRotation), rule.fixedRotationOffset);
-                            Debug.DrawRay(rawBone.worldPosition, math.rotate(rawBone.worldRotation, math.forward()) * 2f, Color.cyan);
-                        }
-                        break;
-                    case PantomimeEffects.Type.GlobalDirectionWeightedChain:
-                        for (int j = 0; j < set.rules.Length; j++)
-                        {
-                            ref var rule = ref set.rules[j];
-                            var rawBone = bones[rule.boneIndex];
-                            var targetAxis = targetPosition - myPosition;
-                            var angle = Angle(myFwdDirection, math.normalize(targetPosition - myPosition));
-                            if (angle > rule.angleLimit)
-                            {
-                                targetAxis = rawBone.worldPosition + math.lerp(targetAxis, myFwdDirection, (angle - rule.angleLimit) / rule.angleTolerance) - rawBone.worldPosition;
-                            }
+                }
+                for (int j = 0; j < set.rules.Length; j++)
+                {
+                    ref var rule = ref set.rules[j];
 
-                            var towards = math.nlerp(quaternion.identity, FromToRotation(myFwdDirection, targetAxis), rule.weight);
-                            rawBone.worldRotation = math.mul(towards, rawBone.worldRotation);
-                            Debug.DrawRay(rawBone.worldPosition, math.rotate(rawBone.worldRotation, math.forward()) * 2f, Color.cyan);
+                    // var childBone = bones[rule.targetBone];
+                    for (int ii = 0; ii < set.iterations; ii++)
+                    {
+                        //xdd
+                        switch (set.type)
+                        {
+                            case PantomimeEffects.Type.BruteForceIk:
+                                // var childBone = bones[set.targetBone];
+                                var parentBone = bones[rule.rotatingBone];
+                                var childFwd = math.normalizesafe(math.rotate(childBone.worldRotation, set.fwdAxis));
+                                var dirToTargetFromChild = math.normalizesafe(targetPosition - childBone.worldPosition);
+                                var rot = math.mul(math.nlerp(quaternion.identity, FromToRotation(childFwd, dirToTargetFromChild), rule.weight), parentBone.worldRotation);
+                                parentBone.worldRotation = rot;
+                                break;
                         }
-                        break;
+                    }
                 }
             }
         }

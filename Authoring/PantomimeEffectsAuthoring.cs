@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Pantomime
 {
@@ -13,19 +14,22 @@ namespace Pantomime
         class _Rule
         {
             public int priority;
-            public int boneIndex;
             public float weight;
-            public float angleLimit;
-            public float angleTolerance;
-            public float3 fixedRotationOffset;
+            public int parentBoneIndex;
         }
 
         [Serializable]
         class _Effect
         {
+            [FormerlySerializedAs("smooth")] public float iterations = 3f;
+            public float smooth_s = 3f;
             public float2 minMaxDistance;
             public PantomimeEffects.Type type;
             public _Rule[] rules = Array.Empty<_Rule>();
+            public float angleLimit;
+            public int targetBone;
+            public float3 childFwdAxis;
+            public float angleTolerance;
         }
 
         [SerializeField] private _Effect[] _effects = Array.Empty<_Effect>();
@@ -44,7 +48,13 @@ namespace Pantomime
                 {
                     var effect = authoring._effects[i];
                     effects[i].type = effect.type;
+                    effects[i].angleLimit = math.radians(effect.angleLimit);
+                    effects[i].iterations = effect.iterations;
+                    effects[i].smooth_s = effect.smooth_s;
                     effects[i].minMaxDistanceSq = new float2(effect.minMaxDistance.x * effect.minMaxDistance.x, effect.minMaxDistance.y * effect.minMaxDistance.y);
+                    effects[i].targetBone = effect.targetBone;
+                    effects[i].fwdAxis = effect.childFwdAxis;
+                    effects[i].angleTolerance = effect.angleTolerance;
                     var rules = builder.Allocate(ref effects[i].rules, effect.rules.Length);
                     var rulesSource = effect.rules.ToList();
                     rulesSource.Sort((rule, rule1) => rule.priority > rule1.priority ? -1 : 1);
@@ -52,10 +62,8 @@ namespace Pantomime
                     {
                         var rule = rulesSource[z];
                         rules[z].weight = rule.weight;
-                        rules[z].boneIndex = rule.boneIndex;
-                        rules[z].angleLimit = math.radians(rule.angleLimit);
-                        rules[z].angleTolerance = rule.angleTolerance;
-                        rules[z].fixedRotationOffset = quaternion.Euler(math.radians(rule.fixedRotationOffset));
+                    
+                        rules[z].rotatingBone = rule.parentBoneIndex;
                     }
 
 

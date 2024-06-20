@@ -38,7 +38,7 @@ namespace Pantomime
         private readonly Toggle _disableAutoExit;
         private readonly Toggle _allowReentering;
 
-        public AbstractGraphSingleMotionNode(GUID guid, IPantomimeParams prms)
+        protected AbstractGraphSingleMotionNode(GUID guid, IPantomimeParams prms)
         {
             _guid = guid;
             _layer = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(TLayerPortType));
@@ -55,7 +55,7 @@ namespace Pantomime
             Post();
         }
 
-        public AbstractGraphSingleMotionNode(PantomimeCollectionAuthoring._Motion motion, IPantomimeParams prms)
+        protected AbstractGraphSingleMotionNode(PantomimeCollectionAuthoring._Motion motion, IPantomimeParams prms)
         {
             _guid = new GUID(motion.guid);
             _layer = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(TLayerPortType));

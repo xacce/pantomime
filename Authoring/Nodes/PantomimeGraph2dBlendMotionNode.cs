@@ -2,16 +2,17 @@
 using Pantomime.Authoring.So;
 using Unity.Mathematics;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Pantomime.Editor.Nodes
 {
     public sealed class PantomimeGraph2dBlendMotionNode : AbstractGraphSingleMotionNode<PantomimeGraphMotionLayerPort, PantomimeGraphMotionBlendableClipsPort>
     {
-        private readonly EnumField _x;
+        private  EnumField _x;
 
-        private readonly EnumField _y;
-        private readonly EnumField _type;
+        private  EnumField _y;
+        private  EnumField _type;
 
         public PantomimeGraph2dBlendMotionNode(GUID guid, IPantomimeParams prms) : base(guid, prms)
         {
@@ -20,12 +21,22 @@ namespace Pantomime.Editor.Nodes
             _x = new EnumField((Enum)Enum.ToObject(prms.GeDynamicValuesType(), 0));
             _y = new EnumField((Enum)Enum.ToObject(prms.GeDynamicValuesType(), 0));
         }
+
         public PantomimeGraph2dBlendMotionNode(PantomimeCollectionAuthoring._Motion motion, IPantomimeParams prms) : base(
             motion,
             prms)
         {
-            RefreshExpandedState();
+            _type = new EnumField(PantomimeCollection.BlendMode.FreeformCartesian2d) { value = motion.blendMode };
+            _x = new EnumField((Enum)Enum.ToObject(prms.GeDynamicValuesType(), 0))
+            {
+                value = (Enum)Enum.ToObject(prms.GeDynamicValuesType(), motion.dynamicVariables.x)
+            };
+            _y = new EnumField((Enum)Enum.ToObject(prms.GeDynamicValuesType(), 0))
+            {
+                value = (Enum)Enum.ToObject(prms.GeDynamicValuesType(), motion.dynamicVariables.y)
+            };
         }
+
         protected override void Post()
         {
             extensionContainer.Add(_x);
@@ -34,6 +45,7 @@ namespace Pantomime.Editor.Nodes
             base.Post();
         }
         public override int2 variables => new int2((int)(object)_x.value, (int)(object)(_y.value));
+
         public override PantomimeCollection.BlendMode blendMode => (PantomimeCollection.BlendMode)_type.value;
     }
 }

@@ -1,30 +1,31 @@
-﻿using Codice.Client.BaseCommands;
+﻿using System;
+using Codice.Client.BaseCommands;
 using Latios.Kinemation;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine.Serialization;
 
 namespace Pantomime
 {
     public partial struct PantomimeEffects : IComponentData
     {
+        [Serializable]
         public partial struct Rule
         {
-            public int boneIndex;
-
+            [FormerlySerializedAs("parentBoneIndex")]
+            public int rotatingBone;
             public float weight;
 
             //after this value (radians) we apply tolerance to difference
-            public float angleLimit;
-
             //0.1-360 - lesser = less sharp curves, 
-            public float angleTolerance;
-            public quaternion fixedRotationOffset; // for aim animation contains rotation for spines
+            // public float angleTolerance;
+            // public quaternion fixedRotationOffset; // for aim animation contains rotation for spines
+
         }
 
         public enum Type
         {
-            LocalDirectionWeightedChain,
-            GlobalDirectionWeightedChain,
+            BruteForceIk,
         }
 
         public partial struct Effect
@@ -32,6 +33,16 @@ namespace Pantomime
             public Type type;
             public BlobArray<Rule> rules;
             public float2 minMaxDistanceSq { get; set; }
+            public float angleTolerance { get; set; }
+
+            public float3 fwdAxis;
+
+            public int targetBone;
+
+            public float angleLimit;
+
+            public float iterations;
+            public float smooth_s;
         }
 
         public partial struct EffectsSet
