@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿# if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 namespace Pantomime.Editor.Nodes
@@ -10,3 +11,4 @@ namespace Pantomime.Editor.Nodes
         public GUID guid { get; }
     }
 }
+#endif

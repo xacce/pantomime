@@ -1,6 +1,8 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Pantomime.Authoring.So;
 using Pantomime.Editor.Nodes;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -14,7 +16,7 @@ namespace Pantomime
 {
     public class PantomimeGraphEditor : GraphView
     {
-        private PantomimeCollectionAuthoring _authoring;
+        private PantomimeAnimator _authoring;
 
         public PantomimeGraphEditor()
         {
@@ -32,7 +34,7 @@ namespace Pantomime
         public void SavePositions()
         {
             var so = new SerializedObject(_authoring);
-            var field = so.FindProperty("_positions");
+            var field = so.FindProperty("positions_s");
             field.arraySize = 0;
             field.ClearArray();
             UpdatePositions(field);
@@ -105,6 +107,7 @@ namespace Pantomime
             so.ApplyModifiedPropertiesWithoutUndo();
             SavePositions();
             EditorUtility.SetDirty(_authoring);
+            AssetDatabase.SaveAssets();
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
@@ -193,7 +196,7 @@ namespace Pantomime
             }
         }
 
-        public void LoadFromAuthoring(PantomimeCollectionAuthoring authoring)
+        public void LoadFromAuthoring(PantomimeAnimator authoring)
         {
             _authoring = authoring;
             foreach (var layer in authoring.layers_s)
@@ -251,3 +254,4 @@ namespace Pantomime
         }
     }
 }
+#endif

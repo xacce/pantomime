@@ -3,6 +3,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Pantomime.Systems
 {
@@ -29,7 +30,7 @@ namespace Pantomime.Systems
             float sign = math.sign(from.x * to.y - from.y * to.x);
             return unsignedAngle * sign;
         }
-       
+
         [BurstCompile]
         public static float BuildWeights(ref NativeHashMap<int2, float> map, ref DynamicBuffer<PantomimeDynamicValue> values,
             in BlobAssetReference<PantomimeCollection.PantomimeBlobData> blob, int li, int mi)
@@ -40,8 +41,6 @@ namespace Pantomime.Systems
             {
                 case PantomimeCollection.BlendMode.Directional1d:
                     float num = values[motion.dynamicVariables.x].value;
-                    float sm = 0;
-                    float best = float.MaxValue;
                     int goodIndex = 0;
 
                     for (int i = 0; i < motion.clipIndexes.Length; i++)
@@ -51,7 +50,6 @@ namespace Pantomime.Systems
                         {
                             goodIndex = i;
                         }
-                        i++;
                     }
 
                     float origin = goodIndex > 0

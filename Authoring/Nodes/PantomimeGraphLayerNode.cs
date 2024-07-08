@@ -1,7 +1,8 @@
-﻿using Pantomime.Authoring.So;
+﻿# if UNITY_EDITOR
+using Pantomime.Authoring.So;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.UIElements;
+using UnityEditor.Search;
 using UnityEngine.UIElements;
 
 namespace Pantomime.Editor.Nodes
@@ -47,3 +48,4 @@ namespace Pantomime.Editor.Nodes
         public float baseWeight => _baseWeight.value;
     }
 }
+#endif

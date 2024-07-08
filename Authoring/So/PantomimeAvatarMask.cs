@@ -1,4 +1,5 @@
-﻿using System;
+﻿# if UNITY_EDITOR
+using System;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -46,3 +47,4 @@ namespace Pantomime.Authoring.So
         }
     }
 }
+#endif

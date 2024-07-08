@@ -1,5 +1,4 @@
 ﻿using System;
-using Codice.Client.BaseCommands;
 using Latios.Kinemation;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -149,6 +148,16 @@ namespace Pantomime
         public static void Trigger(ref EntityCommandBuffer ecb, in Entity entity, int type, float duration = 0)
         {
             ecb.AppendToBuffer(
+                entity,
+                new PantomimeTriggerElement()
+                {
+                    type = type,
+                    fixedDuration = duration,
+                });
+        }  public static void Trigger(ref EntityCommandBuffer.ParallelWriter ecb,int index, in Entity entity, int type, float duration = 0)
+        {
+            ecb.AppendToBuffer(
+                index,
                 entity,
                 new PantomimeTriggerElement()
                 {

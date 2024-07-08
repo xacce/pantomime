@@ -1,4 +1,5 @@
-﻿using Unity.Mathematics;
+﻿# if UNITY_EDITOR
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -42,3 +43,4 @@ namespace Pantomime.Editor.Nodes
         public float2 blendPosition => _blendPosition.value;
     }
 }
+#endif

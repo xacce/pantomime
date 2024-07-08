@@ -218,7 +218,7 @@ namespace Pantomime.Systems
             {
                 if (!_clipWeight.IsCreated)
                 {
-                    _clipWeight = new NativeHashMap<int2, float>(100, Allocator.Temp);
+                    _clipWeight = new NativeHashMap<int2, float>(100, Allocator.Temp);//todo we need 100?
                 }
                 return true;
             }

@@ -1,5 +1,5 @@
 {
-    "name": "Pantomime",
+    "name": "Pantomime.Authoring",
     "rootNamespace": "Pantomime",
     "references": [
         "Latios.Core",
@@ -14,8 +14,10 @@
         "Unity.Burst",
         "Unity.Scenes",
         "UnityEngine.UI",
-        "UnityEditor.UI"
+        "UnityEditor.UI",
+        "Pantomime"
     ],
+  
     "excludePlatforms": [],
     "allowUnsafeCode": true,
     "overrideReferences": false,

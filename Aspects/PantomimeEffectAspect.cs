@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Latios;
 using Latios.Kinemation;
 using Unity.Burst;
 using Unity.Entities;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿# if UNITY_EDITOR
+using System;
 using JetBrains.Annotations;
 using Pantomime.Authoring.So;
 using Pantomime.Editor.Nodes;
@@ -52,7 +53,6 @@ namespace Pantomime
             _isDefault = new Toggle("Is default");
             _disableAutoExit = new Toggle("Disable auto exit");
             _allowReentering = new Toggle("Allow re-entering");
-            Post();
         }
 
         protected AbstractGraphSingleMotionNode(PantomimeCollectionAuthoring._Motion motion, IPantomimeParams prms)
@@ -87,11 +87,11 @@ namespace Pantomime
             {
                 value = motion.allowReentering
             };
-            Post();
         }
 
         protected virtual void Post()
         {
+            Debug.Log("Override post");
             extensionContainer.Add(_trigger);
             extensionContainer.Add(_booleans);
             extensionContainer.Add(_loop);
@@ -118,3 +118,4 @@ namespace Pantomime
         public GUID guid => _guid;
     }
 }
+#endif

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using System.Collections.Generic;
+using Pantomime.Authoring.So;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,25 +10,21 @@ namespace Pantomime
     public class PantomimeGraphWindow : EditorWindow
     {
         PantomimeGraphEditor _graph;
-        private PantomimeCollectionAuthoring _sourceData;
+        private PantomimeAnimator _sourceData;
 
-        [MenuItem("Pantomime/Create pantomime")]
-        public static void FromMenu()
-        {
-            var w = GetWindow<PantomimeGraphWindow>();
-            w.Show();
-        }
+        // [MenuItem("Pantomime/Create pantomime")]
+        // public static void FromMenu()
+        // {
+        //     
+        // }
 
-        private void OnEnable()
+  
+        public void Init(PantomimeAnimator animator)
         {
-            Init();
-            EditorApplication.playModeStateChanged += Init;
-        }
-
-        private void Init(PlayModeStateChange obj)
-        {
+            _sourceData = animator;
             Init();
         }
+        
 
         private void Init()
         {
@@ -37,16 +35,13 @@ namespace Pantomime
             };
             _graph.StretchToParentSize();
             Dictionary<GUID, Rect> restoredPositions = new Dictionary<GUID, Rect>();
-            if (Selection.activeGameObject != null && Selection.activeGameObject.TryGetComponent(out PantomimeCollectionAuthoring sourceData))
+           
+            foreach (var graphPosition in _sourceData.positions_s)
             {
-                _sourceData = sourceData;
-                foreach (var graphPosition in _sourceData._positions)
-                {
-                    if (GUID.TryParse(graphPosition.guid, out var guid)) restoredPositions[guid] = graphPosition.rect;
-                }
-                _graph.LoadFromAuthoring(sourceData);
-                _graph.RestorePositions(restoredPositions);
+                if (GUID.TryParse(graphPosition.guid, out var guid)) restoredPositions[guid] = graphPosition.rect;
             }
+            _graph.LoadFromAuthoring(_sourceData);
+            _graph.RestorePositions(restoredPositions);
             rootVisualElement.Add(_graph);
         }
 
@@ -58,9 +53,9 @@ namespace Pantomime
             {
                 _graph.SavePositions();
             }
-            EditorApplication.playModeStateChanged -= Init;
             if (rootVisualElement != null)
                 rootVisualElement.Clear();
         }
     }
 }
+#endif

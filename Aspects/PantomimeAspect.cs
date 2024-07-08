@@ -9,6 +9,7 @@ namespace Pantomime.Aspects
 
         public void Trigger(int trigger, float duration = 0f)
         {
+            if (trigger < 0) return;
             _triggerElements.Add(
                 new PantomimeTriggerElement()
                 {
@@ -18,17 +19,17 @@ namespace Pantomime.Aspects
         }
 
         public void Set(int flag)
-        {
-            var flags = _flags.ValueRO.flags;
-            flags |= (uint)flag;
-            _flags.ValueRW.flags = flags;
-        }
-
-        public void UnSet(int flag)
-        {
-            var flags = _flags.ValueRO.flags;
-            flags &= ~(uint)flag;
-            _flags.ValueRW.flags = flags;
-        }
+                 {
+                     var flags = _flags.ValueRO.flags;
+                     flags |= (uint)flag;
+                     _flags.ValueRW.flags = flags;
+                 }
+         
+                 public void UnSet(int flag)
+                 {
+                     var flags = _flags.ValueRO.flags;
+                     flags &= ~(uint)flag;
+                     _flags.ValueRW.flags = flags;
+                 }
     }
 }

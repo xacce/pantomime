@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Latios.Authoring;
@@ -8,13 +9,21 @@ using Pantomime.Authoring.So;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace Pantomime
 {
-#if UNITY_EDITOR
     public class PantomimeCollectionAuthoring : MonoBehaviour
     {
+        [Serializable]
+        public struct GraphPosition
+        {
+            public Rect rect;
+            public string guid;
+        }
+
         [Serializable]
         public class _Layer
         {
@@ -47,17 +56,13 @@ namespace Pantomime
             public bool disableAutoExit;
             public bool allowReentering;
         }
-        [SerializeField] public PantomimeParamsUnified params_s;
-        
+
+        //TODO REMOVE THAT (layers, positions not used now, just stored)
         [SerializeField] public _Layer[] layers_s = Array.Empty<_Layer>();
-        [Serializable]
-        public struct GraphPosition
-        {
-            public Rect rect;
-            public string guid;
-        }
         [SerializeField] public GraphPosition[] _positions = Array.Empty<GraphPosition>();
         [SerializeField] private bool enabled_s = true;
+        [SerializeField] private PantomimeAnimator animator;
+
         [TemporaryBakingType]
         struct PantomimeCollectionAuthoringSmartBaker : ISmartBakeItem<PantomimeCollectionAuthoring>
         {
@@ -67,13 +72,18 @@ namespace Pantomime
             public bool Bake(PantomimeCollectionAuthoring authoring, IBaker baker)
             {
                 if (!authoring.enabled_s) return false;
+                if (authoring.animator == null)
+                {
+                    Debug.LogError($"Animator is empty in {authoring.gameObject.name}, subscene path: {AssetDatabase.GUIDToAssetPath(baker.GetSceneGUID())}");
+                }
                 var e = baker.GetEntity(TransformUsageFlags.Dynamic);
                 HashSet<AnimationClip> hashSetClips = new HashSet<AnimationClip>();
                 baker.AddBuffer<PantomimeRuntimeLayerElement>(e);
                 baker.AddBuffer<PantomimeDynamicValue>(e);
                 int zq = 0;
                 int dynoMax = 0;
-                foreach (var layer in authoring.layers_s)
+                ///sss
+                foreach (var layer in authoring.animator.layers_s)
                 {
                     baker.AppendToBuffer(
                         e,
@@ -107,10 +117,10 @@ namespace Pantomime
 
                 var builder = new BlobBuilder(Allocator.Temp);
                 ref var pantomimeBlob = ref builder.ConstructRoot<PantomimeCollection.PantomimeBlobData>();
-                var layers = builder.Allocate(ref pantomimeBlob.layersBlob, authoring.layers_s.Length);
-                for (int i = 0; i < authoring.layers_s.Length; i++)
+                var layers = builder.Allocate(ref pantomimeBlob.layersBlob, authoring.animator.layers_s.Length);
+                for (int i = 0; i < authoring.animator.layers_s.Length; i++)
                 {
-                    var layer = authoring.layers_s[i];
+                    var layer = authoring.animator.layers_s[i];
                     layers[i].overrideMode = layer.overrideMode;
 
                     layers[i].hasMask = false;
@@ -173,6 +183,6 @@ namespace Pantomime
 
     }
 
-#endif
 
 }
+#endif

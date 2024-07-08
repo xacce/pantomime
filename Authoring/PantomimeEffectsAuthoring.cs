@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
@@ -62,7 +63,7 @@ namespace Pantomime
                     {
                         var rule = rulesSource[z];
                         rules[z].weight = rule.weight;
-                    
+
                         rules[z].rotatingBone = rule.parentBoneIndex;
                     }
 
@@ -83,3 +84,4 @@ namespace Pantomime
 
 
 }
+#endif

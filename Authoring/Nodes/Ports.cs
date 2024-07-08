@@ -1,4 +1,5 @@
-﻿namespace Pantomime.Editor.Nodes
+﻿# if UNITY_EDITOR
+namespace Pantomime.Editor.Nodes
 {
     public class PantomimeGraphClipMotionPort
     {
@@ -27,3 +28,4 @@
         
     }
 }
+#endif

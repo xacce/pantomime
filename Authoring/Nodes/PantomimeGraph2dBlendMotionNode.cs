@@ -1,4 +1,5 @@
-﻿using System;
+﻿# if UNITY_EDITOR
+using System;
 using Pantomime.Authoring.So;
 using Unity.Mathematics;
 using UnityEditor;
@@ -20,6 +21,7 @@ namespace Pantomime.Editor.Nodes
             _type = new EnumField(PantomimeCollection.BlendMode.FreeformCartesian2d) { };
             _x = new EnumField((Enum)Enum.ToObject(prms.GeDynamicValuesType(), 0));
             _y = new EnumField((Enum)Enum.ToObject(prms.GeDynamicValuesType(), 0));
+            Post();
         }
 
         public PantomimeGraph2dBlendMotionNode(PantomimeCollectionAuthoring._Motion motion, IPantomimeParams prms) : base(
@@ -35,6 +37,7 @@ namespace Pantomime.Editor.Nodes
             {
                 value = (Enum)Enum.ToObject(prms.GeDynamicValuesType(), motion.dynamicVariables.y)
             };
+            Post();
         }
 
         protected override void Post()
@@ -49,3 +52,4 @@ namespace Pantomime.Editor.Nodes
         public override PantomimeCollection.BlendMode blendMode => (PantomimeCollection.BlendMode)_type.value;
     }
 }
+#endif
